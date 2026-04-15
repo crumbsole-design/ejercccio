@@ -7,31 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include "file_reader.h"
-
-static bool double_equal(double x, double y, double eps = 1e-9)
-{
-    if (std::isnan(x) && std::isnan(y)) return true;
-    if (std::isinf(x) || std::isinf(y)) return x == y;
-    double diff = std::fabs(x - y);
-    if (diff <= eps) return true;
-    double maxabs = std::max(1.0, std::max(std::fabs(x), std::fabs(y)));
-    return diff <= eps * maxabs;
-}
-
-static bool vectors_equal(const std::vector<double>& a, const std::vector<double>& b, double eps = 1e-9)
-{
-    if (a.size() != b.size()) return false;
-    for (size_t i = 0; i < a.size(); ++i) {
-        if (!double_equal(a[i], b[i], eps)) return false;
-    }
-    return true;
-}
-
-static void write_file(const std::string& path, const std::string& content)
-{
-    std::ofstream ofs(path);
-    ofs << content;
-}
+#include "test_helpers.h"
 
 int main()
 {
@@ -204,6 +180,7 @@ int main()
             return 23;
         }
     }
+
 
     std::cout << "All tests passed\n";
     return 0;

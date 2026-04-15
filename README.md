@@ -19,3 +19,9 @@ la lectura es primero comprobar que se puede abrir el archivo y luego un loop ha
 
 
 para probar los resultados de los test primero creamos un comparador de double robusto. el operador == simple nos podria dar errores debido al redondeo y limitacion de precision.por eso usamos la tecnica del epsilon, en mi caso he usado un valor de 1e-9 para la comparacion, lo que significa que seran considerados iguales si la diferencia absoluta entre ellos es igual o menor a ese valor.
+
+se han añadido una serie de test no solicitados en el enunciado del problema para programar código robusto. 
+
+
+en el proceso de normalizacion entre [0,1] se ha añadido un control por si todos son iguales o hay un solo valor, adoptandose como solucion en ese caso que el valor es el minimo, es decir el nuevo vector normalizado sera uno lleno de ceros. Ademas de esta forma el resultado seria congruente con el requisito del enunciado "En el caso particular  M = m, no se realiza la transformaci´on y se asume que la
+proporci´on de elementos en los diez intervalos es cero."

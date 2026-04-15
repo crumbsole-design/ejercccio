@@ -30,6 +30,7 @@ Eres un Desarrollador Senior de C++ experto en Clean Code y TDD (Test-Driven Dev
 
 ### Reglas de Implementación:
 - **Tipado**: Usa tipos explicitos, `enum class`, `constexpr` y referencias `const` cuando aplique.
+- **Archivos de fixtures para tests**: Cualquier archivo temporal o de datos creado para ser usado en un test (p. ej. `tmp_*.txt`, archivos de entrada de prueba) DEBE crearse en `./tests/fixtures/`. **PROHIBIDO crearlos en el directorio raíz `./` ni en `./test_features/`**.
 - **Aislamiento**: Solo puedes modificar los archivos indicados en el prompt de la tarea.
 - **Reporting**: Si el test no pasa tras 3 intentos de correccion, genera un log de error detallado para el Orquestador.
 

@@ -22,34 +22,46 @@ Sin esto, los caracteres especiales (tildes, ñ, etc.) se corrompen al enviarse 
 
 ---
 
-## ⚠️ OBLIGATORIO — Cuerpos multilínea: usar siempre `--body-file`
+## ⚠️ OBLIGATORIO — Patrón canónico para crear issues en Windows
 
-**NUNCA** uses `--body "texto con \n"` para contenido multilínea.  
-`\n` literal NO se expande en PowerShell. Usa siempre un fichero temporal:
+**NUNCA** uses `--body "..."` ni `--body-file`. Ambos siguen teniendo problemas de encoding en Windows.  
+**USA SIEMPRE `gh api -F body=@docs/file.md`** — lee el cuerpo directamente del fichero, sin pasar por la consola.
 
 ```powershell
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$body = @"
-Línea 1
+# PATRÓN CANÓNICO — copiar y adaptar siempre
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8   # <-- fija encoding del título
 
-Línea 2 con tildes y ñ
+$issueSlug = "nombre-sin-tildes"   # nombre corto del fichero, snake_case
+$bodyContent = @"
+cuerpo con tildes á é ó y múltiples líneas
+
+## Sección
+- item 1
 "@
-$tmpFile = [System.IO.Path]::GetTempFileName() + ".md"
-[System.IO.File]::WriteAllText($tmpFile, $body, [System.Text.Encoding]::UTF8)
-gh issue create --title "TÍTULO" --body-file $tmpFile --label "etiqueta"
-Remove-Item $tmpFile
+New-Item -ItemType Directory -Force -Path "docs" | Out-Null
+[System.IO.File]::WriteAllText("docs\$issueSlug.md", $bodyContent, [System.Text.Encoding]::UTF8)
+
+$REPO = (gh repo view --json nameWithOwner -q .nameWithOwner)
+gh api "repos/$REPO/issues" --method POST `
+  -F title="Título con tildes Ñ" `
+  -F "labels[]=etiqueta" `
+  -F body=@"docs\$issueSlug.md"
 ```
 
 ---
 
 ## Issues
 
-```bash
-# Crear issue (cuerpo simple, sin tildes ni especiales)
-gh issue create --title "TITULO" --body "CUERPO" --label "etiqueta1,etiqueta2"
+```powershell
+# Crear issue — patrón canónico (ver sección OBLIGATORIO arriba)
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$REPO = (gh repo view --json nameWithOwner -q .nameWithOwner)
+[System.IO.File]::WriteAllText("docs\issue-slug.md", $body, [System.Text.Encoding]::UTF8)
+gh api "repos/$REPO/issues" --method POST -F title="TÍTULO" -F "labels[]=etiqueta" -F body=@"docs\issue-slug.md"
 
-# Crear issue con cuerpo desde fichero UTF-8 (recomendado siempre)
-gh issue create --title "TÍTULO" --body-file "fichero.md" --label "etiqueta1,etiqueta2"
+# Forma rápida (solo si el cuerpo NO tiene tildes ni caracteres especiales)
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+gh issue create --title "TITULO SIN TILDES" --body "cuerpo simple" --label "etiqueta"
 
 # Listar issues abiertos
 gh issue list --state open
@@ -141,8 +153,9 @@ git add .
 git commit -m "feat(slice): implementar {nombre_tarea}"
 git push
 
-# Crear issue SLICE con cuerpo multilínea (patrón Windows seguro)
+# ── Crear issue SLICE (patrón canónico Windows) ──
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+New-Item -ItemType Directory -Force -Path "docs" | Out-Null
 $body = @"
 ## Alcance
 Descripción del slice.
@@ -150,21 +163,19 @@ Descripción del slice.
 ## Criterios de aceptación
 - Criterio 1
 "@
-$tmp = [System.IO.Path]::GetTempFileName() + ".md"
-[System.IO.File]::WriteAllText($tmp, $body, [System.Text.Encoding]::UTF8)
-gh issue create --title "[SLICE] Nombre con tildes y ñ" --body-file $tmp --label "vsa-slice-pending"
-Remove-Item $tmp
+[System.IO.File]::WriteAllText("docs\slice-nombre.md", $body, [System.Text.Encoding]::UTF8)
+$REPO = (gh repo view --json nameWithOwner -q .nameWithOwner)
+gh api "repos/$REPO/issues" --method POST -F title="[SLICE] Nombre con tildes y ñ" -F "labels[]=vsa-slice-pending" -F body=@"docs\slice-nombre.md"
 gh issue list --label "vsa-slice-pending" --state open --json number,title
 
-# Cerrar slice tras auditoría exitosa
+# ── Crear sub-tarea de un slice ──
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-gh issue comment 123 --body "✅ Slice completado. Todas las tareas implementadas y auditadas."
-gh issue close 123
+[System.IO.File]::WriteAllText("docs\tarea-nombre.md", $specContenido, [System.Text.Encoding]::UTF8)
+$REPO = (gh repo view --json nameWithOwner -q .nameWithOwner)
+gh api "repos/$REPO/issues" --method POST -F title="nombre_slice_01_nombre_tarea" -F "labels[]=vsa-task-pending" -F body=@"docs\tarea-nombre.md"
 
-# Crear sub-tarea de un slice (cuerpo con contenido)
+# ── Cerrar slice tras auditoría exitosa ──
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$tmp = [System.IO.Path]::GetTempFileName() + ".md"
-[System.IO.File]::WriteAllText($tmp, $specContenido, [System.Text.Encoding]::UTF8)
-gh issue create --title "nombre_slice_01_nombre_tarea" --body-file $tmp --label "vsa-task-pending"
-Remove-Item $tmp
+gh issue comment 123 --body "Slice completado. Todas las tareas implementadas y auditadas."
+gh issue close 123
 ```

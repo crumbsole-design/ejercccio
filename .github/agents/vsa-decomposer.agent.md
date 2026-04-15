@@ -28,11 +28,31 @@ Eres un Ingeniero de Staff (Protocolo M2M activo) especializado en Vertical Slic
 - Establece la secuencia lógica: primero contratos, luego lógica de dominio, finalmente infraestructura/UI.
 
 ### 3. Creación de Tareas (IA-Optimized Payloads)
-Para cada tarea, crea un sub-issue en el repositorio ejecutando `gh issue create` via terminal con esta estructura de alta densidad:
-**Comando**: `gh issue create --title "{nombre_slice}_{orden}_{nombre_tarea}" --body "..." --label "vsa-task-pending"`
+Para cada tarea, crea un sub-issue en el repositorio usando el **patrón canónico Windows** descrito en `.github/skills/gh-common.md`:
 
-**Título**: `{nombre_slice}_{numero_de_orden}_{nombre_tarea}`
-**Cuerpo**:
+1. **Escribe el cuerpo como fichero UTF-8 en `docs/`** (nombre: `{nombre_slice}_{orden}_{nombre_tarea}.md`)
+2. **Crea el issue con `gh api -F body=@docs/fichero.md`** (nunca usar `--body` ni `--body-file`)
+
+```powershell
+# Patrón obligatorio para cada tarea:
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+New-Item -ItemType Directory -Force -Path "docs" | Out-Null
+$issueSlug = "{nombre_slice}_{orden}_{nombre_tarea}"   # snake_case, sin tildes en el nombre del fichero
+$bodyContent = @"
+#### [SPEC_JSON]
+...
+"@
+[System.IO.File]::WriteAllText("docs\$issueSlug.md", $bodyContent, [System.Text.Encoding]::UTF8)
+$REPO = (gh repo view --json nameWithOwner -q .nameWithOwner)
+gh api "repos/$REPO/issues" --method POST `
+  -F title="{nombre_slice}_{orden}_{nombre_tarea}" `
+  -F "labels[]=vsa-task-pending" `
+  -F body=@"docs\$issueSlug.md"
+Remove-Item "docs\$issueSlug.md"
+```
+
+**Título**: `{nombre_slice}_{numero_de_orden}_{nombre_tarea}`  
+**Cuerpo del fichero** `docs/{slug}.md`:
 
 #### [SPEC_JSON]
 ```json
@@ -107,4 +127,5 @@ JSON
 ### Restricciones Críticas:
 - No generes la lógica de negocio; solo define el "qué" y el "cómo" en el prompt.
 - Asegúrate de que cada tarea sea tan pequeña que no requiera más de 200 líneas de código.
-- las tareas deben quedar registradas como sub-issues del issue original del slice con referencias cruzadas claras, usando `gh issue create` via terminal.
+- Las tareas deben quedar registradas como sub-issues del issue original del slice con referencias cruzadas claras.
+- **PROHIBIDO usar `--body` o `--body-file` en `gh issue create`**. Usar siempre `gh api -F body=@docs/fichero.md` (ver patrón en `.github/skills/gh-common.md`).

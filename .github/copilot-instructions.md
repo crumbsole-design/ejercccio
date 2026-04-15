@@ -2,6 +2,7 @@
 Este es un proyecto de Python que utiliza herramientas de IA y GitHub Actions.
 
 # Reglas de Entorno y Ejecución
+- **Archivos de fixtures para tests**: Cualquier archivo temporal o de datos creado para ser usado en un test (p. ej. `tmp_*.txt`, archivos de entrada de prueba) debe crearse en `./tests/fixtures/`, **nunca en el directorio raíz `./` ni en `./test_features/`**.
 - **Entorno Virtual**: Todo el código, scripts y tests deben ejecutarse dentro del entorno virtual local `.venv`.
 - **Comandos en Terminal**: Si sugieres comandos de terminal (ej. para instalar librerías o lanzar scripts), prefiérelos con la activación del entorno. Asume entorno Linux/Mac por defecto: `source .venv/bin/activate && comando`. En Windows: `.venv\Scripts\Activate.ps1`.
 - **Tests**: Usamos `pytest`. Cuando me pidas ejecutar tests como `test_find_by_fingerprints_found`, `test_find_by_fingerprints_partial` o `test_find_by_fingerprints_empty`, asegúrate de incluir la activación de `.venv` en el comando sugerido.

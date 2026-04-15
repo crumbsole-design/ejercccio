@@ -13,7 +13,7 @@ int main()
 {
     // Test 1: archivo con varios números (decimales, negativos, signos, notación científica)
     {
-        const std::string f = "tmp_test_numbers_mixed.txt";
+        const std::string f = "tests/fixtures/tmp_test_numbers_mixed.txt";
         write_file(f, "1.5 2.0\n-3.14e2 4.5 +2 .5 2. 6.022e23 1E-3 -0.5 -0");
         try {
             auto v = read_real_numbers_from_file(f);
@@ -46,7 +46,7 @@ int main()
 
     // Test 3: archivo vacío -> vector vacío
     {
-        const std::string f = "tmp_empty.txt";
+        const std::string f = "tests/fixtures/tmp_empty.txt";
         write_file(f, "");
         try {
             auto v = read_real_numbers_from_file(f);
@@ -62,7 +62,7 @@ int main()
 
     // Test 4: dato inválido (texto) -> invalid_argument con token en el mensaje
     {
-        const std::string f = "tmp_invalid_text.txt";
+        const std::string f = "tests/fixtures/tmp_invalid_text.txt";
         write_file(f, "1.5 abc 2.0");
         try {
             auto v = read_real_numbers_from_file(f);
@@ -83,7 +83,7 @@ int main()
 
     // Test 5: dato inválido (símbolos) -> invalid_argument
     {
-        const std::string f = "tmp_invalid_symbols.txt";
+        const std::string f = "tests/fixtures/tmp_invalid_symbols.txt";
         write_file(f, "$ % &");
         try {
             auto v = read_real_numbers_from_file(f);
@@ -104,7 +104,7 @@ int main()
 
     // Test 6: dato con coma como separador -> invalid_argument ("1,234")
     {
-        const std::string f = "tmp_number_comma.txt";
+        const std::string f = "tests/fixtures/tmp_number_comma.txt";
         write_file(f, "1,234 5.6");
         try {
             auto v = read_real_numbers_from_file(f);
@@ -125,7 +125,7 @@ int main()
 
     // Test 7: número fuera de rango -> invalid_argument
     {
-        const std::string f = "tmp_out_of_range.txt";
+        const std::string f = "tests/fixtures/tmp_out_of_range.txt";
         write_file(f, "1e400");
         try {
             auto v = read_real_numbers_from_file(f);
@@ -146,7 +146,7 @@ int main()
 
     // Test 8: token con letras al final -> invalid_argument
     {
-        const std::string f = "tmp_trailing_letters.txt";
+        const std::string f = "tests/fixtures/tmp_trailing_letters.txt";
         write_file(f, "3.5abc");
         try {
             auto v = read_real_numbers_from_file(f);
@@ -167,7 +167,7 @@ int main()
 
     // Test 9: archivo con solo espacios/tabulaciones -> vector vacío
     {
-        const std::string f = "tmp_whitespace.txt";
+        const std::string f = "tests/fixtures/tmp_whitespace.txt";
         write_file(f, "   \n\t  ");
         try {
             auto v = read_real_numbers_from_file(f);

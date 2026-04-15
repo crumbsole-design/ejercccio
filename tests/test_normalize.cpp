@@ -120,7 +120,7 @@ int main()
 
     // Test 8: Lectura - números extremos pero dentro de rango (1e308, 1e307)
     {
-        const std::string f = "tmp_extreme_large.txt";
+        const std::string f = "tests/fixtures/tmp_extreme_large.txt";
         write_file(f, "1e308 1e307");
         try {
             auto v = read_real_numbers_from_file(f);

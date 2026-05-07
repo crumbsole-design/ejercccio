@@ -1,0 +1,19 @@
+# Este workflow está deshabilitado y no ejecuta ninguna acción
+name: Disable Actions
+on:
+  workflow_call:
+    types: [never]
+  workflow_dispatch:
+    types: [never]
+  push:
+    branches-ignore:
+      - '**'
+  pull_request:
+    branches-ignore:
+      - '**'
+jobs:
+  nothing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: No-op
+        run: echo "Actions deshabilitadas"
